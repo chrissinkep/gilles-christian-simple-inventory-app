@@ -14,3 +14,4 @@ npm run build:production
 npm run start:production
 npm install pm2@latest -g
 export NODE_ENV=production && pm2 start backend/server.js
+sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080 # 8080 -> 8080
