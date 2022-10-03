@@ -1,105 +1,40 @@
-username: candidate-gilles.christian
-api name: gilles.christian
-api key: 010097069788a1dcdf025a61f0a67c3fa254305e
-repo link: git@gitea.scopicsoftware.com:scopic-interviewing/gilles-christian-simple-inventory-app.git
+# Scopic Software - DevOps Skill Test
 
-AWS PW: h5gziptsj5x6669
+## Deployment Diagram
+![Deployment Diagram gilles](deployment_diagram_text.jpg "Deployment Diagram gilles")
 
-security
-security 1: set password on res
+- Ec2 Instances runingin ubuntu OS to host app
+- Lauch template has been create to generate new instance __gilles-asg-template__
+- AutoScaling group to create new instance to handle the load for the application 
+- MySQL RDS database to host data
+    * aws_db_name = gilles-db-tier
+    * aws_db_password = P6JBO25c0bW&
 
-aws_db_name = gilles-db-tier
-aws_db_password = P6JBO25c0bW&
+- Code Deploy and Github for CD
+- Load balancer for balancing the loads on the different instances
 
-2: security 2 no public access to ads just in vpc
+## CD / Deployment
+- The project is hosted on the public github repository that has been used for the CD
+https://github.com/chrissinkep/gilles-christian-simple-inventory-app.git
+- The deployment scripts are located in ./deploy.sh
 
-3: gilles-db-tier.czdsnotlnwwp.ap-southeast-1.rds.amazonaws.com, onlz ec2 can access
+## How does the app Scale
+AWS Ec2 Auto Scaling helps you make sure that you have the right number of EC2 instances available to handle the load for the application. when when cpu usage exceeds 20%, on the instance a new ones are automatically created with same launch template in or out different subnet
+- scaling policy: avg cpu utilisation for load balancer 20%
 
-4: add .env
+## Security Steps
+- Set MFA authentication on the account
+- Set a new password on rds db
+- Only Ec2 instances can access the db (gilles-db-tier.czdsnotlnwwp.ap-southeast-1.rds.amazonaws.com)
+- Using AWS Secrets Manager to provide application access to database credentials
+- Using Security Groups to control access what network traffic, protocols, and ports are accepted by the application’s servers 41.75
 
+## Cost Calculation
 
-low cost
-1. database free offer
-2. cost optimization with billing alert
+![Cost Estimation Diagram](cost_estimation.jpeg "Cost Etimation Diagram/month")
+We have a Total of **$45.64/month**
 
-
-scaling policy:
-scaing policie: avg cpu utilisation for load balancer 20%
-
-
-# GIT ACCESS
-echo "# simple-inventory-app" >> README.md
-git init
-git add README.md
-git commit -m "first commit"
-git branch -M main
-git remote add origin https://github.com/chrissinkep/simple-inventory-app.git
-git push -u origin main
-- deployment process
-
-
-# install nodejs on ec2
-#!/bin/bash
-sudo exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
-sudo apt update
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
-cd ~
-. ~/.nvm/nvm.sh
-cd ~
-nvm install 10
-nvm use 10
-mkdir app
-cd app
-git clone https://github.com/chrissinkep/gilles-christian-simple-inventory-app.git .
-npm run build:production
-npm i cross-env
-npm install pm2@latest -g
-export NODE_ENV=production && pm2 start backend/server.js
-sudo iptables -t nat -L
-sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080 # 8080 -> 8080
-
-
-
-# copy public key to server
-mkdir app
-scp file.txt ubuntu@10.10.0.2:/home/ubuntu
-scp -i gilles-akey.pem gilles.christian.pem ubuntu@ec2-18-143-146-57.ap-southeast-1.compute.amazonaws.com:app
-# send directory
-scp -i ../../gilles-akey.pem -r public/ ubuntu@ec2-18-143-146-57.ap-southeast-1.compute.amazonaws.com:app/gilles-christian-simple-inventory-app/frontend
-
-
-# correct private and public key:  
-chmod 600 *.pem *.ppk
-
-# clone private repo: 
-git -c core.sshCommand="ssh -i gilles.christian.pem" clone git@gitea.scopicsoftware.com:scopic-interviewing/gilles-christian-simple-inventory-app.git
-
-
-# install dependencys on backend
-cd backend
-npm i
-npm i bcrypt
-npm i pm2
-npm i cross-env
-
-# install dependencys on frontend
-cd backend
-npm i
-npm i bcrypt
-npm i pm2 
-npm i cross-env
-
-
-# port forwading usin NAT
-sudo iptables -t nat -L
-sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080 # 8080 -> 8080
-
-# run server in background
-npm install pm2@latest -g
-export NODE_ENV=production && pm2 start server.js
-# pm2 delete server.js
-pm2 delete <daemon id>
-
-
-
-
+## Cost Estimation
+- For 100 Simultaneous requests/seconds : $41.76
+- For 1000 Simultaneous requests/seconds : $252
+- For 10000 Simultaneous requests/seconds : $354,40
