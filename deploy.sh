@@ -1,14 +1,25 @@
-#!/bin/bash
+#!/bin/bash -ex
 echo "=====================Cosole ouput CdOut======================="
-sudo exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
+# output user data logs into a separate file for debugging
+exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 echo "=====================update apt packages======================="
 sudo apt update
 echo "=====================install Nodejs======================="
 export NVM_DIR="$HOME/.nvm"
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
 . ~/.nvm/nvm.sh
+#export NVM dir
+export NVM_DIR="/.nvm"	
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"	
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" 
 nvm install 10
 nvm use 10
+sudo apt update
+echo "=====================Clone Repository======================="
+cd /home/ubuntu
+mkdir app
+cd app
+git clone https://github.com/chrissinkep/gilles-christian-simple-inventory-app.git .
 echo "=====================Build Production code======================="
 npm run build:production
 npm i cross-env
