@@ -15,11 +15,7 @@ export NVM_DIR="/.nvm"
 nvm install 10
 nvm use 10
 sudo apt update
-echo "=====================Clone Repository======================="
-cd /home/ubuntu
-mkdir app
-cd app
-git clone https://github.com/chrissinkep/gilles-christian-simple-inventory-app.git .
+
 echo "=====================Build Production code======================="
 npm run build:production
 npm i cross-env
