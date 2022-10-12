@@ -1,55 +1,43 @@
 # Scopic Software - DevOps Skill Test
+The application is split in 2 micro app, a backend and a frontend, To deploy the application, I made a script that clone the code on the server, create the production version (build) install the necessary, and I use PM2 to run the code in background as a daemon. I set up an autoscaling group that automatically creates instances from a launch template with a maximum of 3 instances, and I also created a load balancer to distribute the load of the tasks to the different instances. The application benefits from a high availability, here is the  [LOAD BALANCER Public DNS LINK to open the app](htps://gilles-asg1-1-95532259.ap-southeast-1.elb.amazonaws.com) .
+The diagram below details the work done.
 
-## Simple Inventory Application
 
-This is a very simple and basic product inventory application.
-It is an application working with Node.js in the backend with SQL database (Postgress or MySQL) as a persistant layer and React with Bootstrap on the frontend.
+## Deployment Diagram
+![Deployment Diagram gilles](deployment_diagram_text.jpg "Deployment Diagram gilles")
 
-The goal of this repository is to provide a real world scenario application that is ready to be deployed.
+- Ec2 Instances runingin ubuntu OS to host app
+- Lauch template has been create to generate new instance __gilles-asg-template__
+- AutoScaling group to create new instance to handle the load for the application 
+- MySQL RDS database to host data
+    * aws_db_name = gilles-db-tier
+    * aws_db_password = P6JBO25c0bW&
 
-## Build & Run
+- Code Deploy and Github for CD
+- Load balancer for balancing the loads on the different instances
 
-1. Install prerequisistes needed based on project description.
+## CD / Deployment
+- The project is hosted on the public github repository that has been used for the CD
+https://github.com/chrissinkep/gilles-christian-simple-inventory-app.git
+- The deployment scripts are located in ./deploy.sh
 
-2. Open 'frontend/src/config/localhost.js' or 'frontend/src/config/production.js'
+## How does the app Scale
+AWS Ec2 Auto Scaling helps you make sure that you have the right number of EC2 instances available to handle the load for the application. when when cpu usage exceeds 20%, on the instance a new ones are automatically created with same launch template in or out different subnet
+- scaling policy: avg cpu utilisation for load balancer 50%
 
-   2.1. Set your custom configs
+## Security Steps
+- Set MFA authentication on the account
+- Set a new password on rds db
+- Only Ec2 instances can access the db (gilles-db-tier.czdsnotlnwwp.ap-southeast-1.rds.amazonaws.com)
+- Using AWS Secrets Manager to provide application access to database credentials
+- Using Security Groups to control access what network traffic, protocols, and ports are accepted by the application’s servers 41.75
 
-3. Open 'backend/config/localhost.js' or 'backend/config/production.js'
+## Cost Calculation
 
-   3.1. Set your custom configs
+![Cost Estimation Diagram](cost_estimation.jpeg "Cost Etimation Diagram/month")
+We have a Total of **$45.64/month**
 
-### Run Development
-
-1. Go to the 'frontend' folder
-
-   1.1. Run `npm install`
-
-   1.2. Run `npm run start`
-
-2. Go to the 'backend' folder
-
-   2.1. Run `npm run install`
-
-   2.2. Run `npm run start`
-
-### Run Production
-
-3. Go to the root folder
-
-   3.1. Run `npm run build:production`
-
-   3.2. Run `npm run start:production`
-
-### Initialize Database
-
-You can create the database tables by:
-
-1. Go to 'backend' folder
-
-   1.1. Run `npm run db:reset:localhost`, or
-
-   1.2. Run `npm run db:reset:production`
-
-**These commands will DROP ALL THE DATABASE TABLES. Make sure you are running it pointing to the correct database.**
-# simple-inventory-app
+## Cost Estimation
+- For 100 Simultaneous requests/seconds : $41.76
+- For 1000 Simultaneous requests/seconds : $252
+- For 10000 Simultaneous requests/seconds : $354,40

@@ -1,4 +1,7 @@
 # Scopic Software - DevOps Skill Test
+The application is split in 2 micro app, a backend and a frontend, To deploy the application, I made a script that clone the code on the server, create the production version (build) install the necessary, and I use PM2 to run the code in background as a daemon. I set up an autoscaling group that automatically creates instances from a launch template with a maximum of 3 instances, and I also created a load balancer to distribute the load of the tasks to the different instances. The application benefits from a high availability, here is the  [LOAD BALANCER Public DNS LINK to open the app](htps://gilles-asg1-1-95532259.ap-southeast-1.elb.amazonaws.com) .
+The diagram below details the work done.
+
 
 ## Deployment Diagram
 ![Deployment Diagram gilles](deployment_diagram_text.jpg "Deployment Diagram gilles")
@@ -20,7 +23,7 @@ https://github.com/chrissinkep/gilles-christian-simple-inventory-app.git
 
 ## How does the app Scale
 AWS Ec2 Auto Scaling helps you make sure that you have the right number of EC2 instances available to handle the load for the application. when when cpu usage exceeds 20%, on the instance a new ones are automatically created with same launch template in or out different subnet
-- scaling policy: avg cpu utilisation for load balancer 20%
+- scaling policy: avg cpu utilisation for load balancer 50%
 
 ## Security Steps
 - Set MFA authentication on the account
